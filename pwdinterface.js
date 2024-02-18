@@ -113,6 +113,37 @@ function processRequest(method, params, req, res) {
             }
 
             break;
+
+        case "/lanecheck": // Enter lane check mode
+            res.writeHead(200);
+            res.end(JSON.stringify({
+                command_sent: true
+            }));
+
+            startLaneCheck();
+
+            break;
+
+        case "/disppack": // Display pack number
+            res.writeHead(200);
+            res.end(JSON.stringify({
+                command_sent: true
+            }));
+
+            displaypack();
+
+            break;
+
+        case "/displanes": // Display lane numbers
+            res.writeHead(200);
+            res.end(JSON.stringify({
+                command_sent: true
+            }));
+
+            displaylanes();
+
+            break;
+
         default: // Unhandled API method
             res.writeHead(400);
             res.end(JSON.stringify({
@@ -185,6 +216,42 @@ function setLanesNotUsed(lanesNotUsed) {
             }
             console.log('Sent M' + lane + ' to timer')
         });
+    });
+}
+
+//Enter lane sensor check mode
+function startLaneCheck() {
+    if (CONFIG.RACE_STATUS =="WAIT") { //only perform this in WAIT state
+        CONFIG.RACE_STATUS = "TESTING";
+
+        serialport.write('C\r\n', function(err) {
+            if (err) {
+            return console.log('Error on write: ', err.message)
+            }
+            console.log('Sent C to timer')
+        });
+    }
+}
+
+//Display lane numbers on matrices
+function displaylanes() {
+    //mask lane
+    serialport.write('L\r\n', function(err) {
+        if (err) {
+           return console.log('Error on write: ', err.message)
+        }
+        console.log('Sent L to timer')
+    });
+}
+
+//Display pack number on matrices
+function displaypack() {
+    //mask lane
+    serialport.write('2\r\n', function(err) {
+        if (err) {
+           return console.log('Error on write: ', err.message)
+        }
+        console.log('Sent 2 to timer')
     });
 }
 
